@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Informatika olimpiadasi, 10-sinf, tuman bosqichi</title>
+    <style>
+        @font-face { font-family: 'Bricolage'; src: url('/fonts/bricolage-grotesque-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-display: swap; }
+        @font-face { font-family: 'Onest'; src: url('/fonts/onest-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: 'Onest'; src: url('/fonts/onest-cyrillic-wght-normal.woff2') format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+        @font-face { font-family: 'JetBrains Mono'; src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2'); font-weight: 100 800; font-display: swap; }
+
+        :root {
+            --paper: #fbfcff;
+            --grid: #dce8f6;
+            --margin-red: #e0524f;
+            --ink: #1f3fbf;
+            --ink-soft: rgba(31, 63, 191, .08);
+            --text: #1c2233;
+            --muted: #5d667d;
+            --rule: #c5d4ea;
+            --ok: #1d7a46;
+            --bad: #c8302b;
+            --display: 'Bricolage', 'Segoe UI', system-ui, sans-serif;
+            --body: 'Onest', 'Segoe UI', system-ui, sans-serif;
+            --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+            --line-x: 64px;          /* qizil chiziq o'rni */
+            --pad-left: 92px;        /* matn boshlanishi */
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            font-family: var(--body);
+            color: var(--text);
+            background-color: var(--paper);
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 28px 28px;
+            line-height: 1.55;
+            padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+            -webkit-tap-highlight-color: transparent;
+        }
+        .opt, .btn, summary { touch-action: manipulation; }
+
+        /* Daftar sahifasi: chap tomonda qizil maydon chizig'i */
+        .sheet {
+            position: relative;
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 56px 24px 24px var(--pad-left);
+        }
+        .sheet::before {
+            content: "";
+            position: absolute; top: 0; bottom: 0; left: var(--line-x);
+            width: 2px; background: var(--margin-red); opacity: .75;
+        }
+
+        /* Sarlavha */
+        .masthead { margin-bottom: 56px; }
+        .masthead h1 {
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(2.4rem, 7vw, 4.4rem);
+            line-height: .98;
+            letter-spacing: -.025em;
+            color: var(--ink);
+            margin: 0 0 20px;
+        }
+        .masthead .lead { margin: 0 0 22px; max-width: 46ch; color: var(--muted); font-size: 1.05rem; }
+        .facts { display: flex; flex-wrap: wrap; gap: 10px 32px; margin: 0; }
+        .facts div { display: flex; flex-direction: column; }
+        .facts dt { font-size: .8rem; color: var(--muted); }
+        .facts dd { margin: 0; font-weight: 650; font-size: 1.05rem; }
+
+        /* Qismlar */
+        .part { margin-top: 64px; }
+        .part:first-of-type { margin-top: 0; }
+        .part h2 {
+            font-family: var(--display);
+            font-weight: 750;
+            font-size: 1.9rem;
+            letter-spacing: -.015em;
+            margin: 0 0 4px;
+            color: var(--ink);
+        }
+        .part .part-meta { margin: 0 0 6px; color: var(--muted); }
+        .part .part-note { margin: 0 0 8px; color: var(--muted); font-size: .92rem; max-width: 60ch; }
+
+        /* Savol */
+        .q { position: relative; padding: 30px 0 34px; border-bottom: 1px solid var(--rule); }
+        .q:last-child { border-bottom: 0; }
+        .q .num {
+            position: absolute; left: calc(var(--pad-left) * -1); width: calc(var(--line-x) - 14px);
+            top: 28px; text-align: right;
+            font-family: var(--display); font-weight: 750; font-size: 1.5rem; line-height: 1.25; color: var(--ink);
+        }
+        .qtext { margin: 0 0 14px; font-size: 1.08rem; font-weight: 520; line-height: 1.6; max-width: 62ch; }
+        .qtext code, .qtext pre { font-family: var(--mono); }
+        .qtext code { background: var(--ink-soft); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+        .qtext pre.code {
+            margin: 12px 0 0; padding: 14px 16px; overflow-x: auto;
+            background: var(--ink-soft); border-left: 3px solid var(--ink);
+            font-size: .84rem; line-height: 1.6; font-weight: 450; max-width: 100%;
+        }
+
+        /* Rasm (kesilmaydi) */
+        .fig { margin: 4px 0 18px; padding: 12px; background: #fff; border: 1px solid var(--rule); max-width: 600px; box-shadow: 4px 4px 0 var(--grid); }
+        .fig .fig-frame { max-width: 560px; }
+        .fig .hint { margin: 8px 0 0; font-size: .78rem; color: var(--muted); }
+        .pdf-img { display: block; width: 100%; height: auto; object-fit: contain; background: #fff; cursor: zoom-in; }
+        .fig details { margin-top: 10px; }
+        .fig summary { cursor: pointer; color: var(--ink); font-weight: 600; font-size: .88rem; text-decoration: underline; text-underline-offset: 3px; }
+        .fig details .pdf-img { margin-top: 10px; border: 1px solid var(--rule); }
+        .img-error { border: 1px dashed var(--bad); color: var(--bad); background: #fff3f2; padding: .75rem; font-size: .8rem; word-break: break-all; }
+
+        /* Variantlar */
+        .opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; max-width: 700px; }
+        .opt { position: relative; display: flex; align-items: flex-start; gap: 12px; padding: 9px 8px; border-radius: 8px; cursor: pointer; }
+        .opt input { position: absolute; opacity: 0; pointer-events: none; }
+        .opt .letter {
+            flex: none; width: 30px; height: 30px; margin-top: -1px; border-radius: 50%;
+            border: 1.5px solid var(--ink); color: var(--ink); background: var(--paper);
+            display: grid; place-items: center;
+            font-family: var(--display); font-weight: 700; font-size: .95rem;
+        }
+        .opt .otext { padding-top: 2px; font-size: .98rem; overflow-wrap: anywhere; }
+        .opt:hover .letter { background: var(--ink-soft); }
+        .opt input:checked + .letter { background: var(--ink); color: #fff; }
+        .opt input:checked ~ .otext { font-weight: 650; }
+        .opt:focus-within { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+        /* Tekshirilgandan keyin */
+        body.checked .opt { cursor: default; }
+        body.checked .opt:hover .letter { background: var(--paper); }
+        body.checked .opt input:checked:hover + .letter { background: var(--ink); }
+        .opt.is-correct .letter { background: var(--ok) !important; border-color: var(--ok); color: #fff; }
+        .opt.is-correct .otext { color: var(--ok); font-weight: 700; }
+        .opt.is-wrong .letter { background: var(--bad) !important; border-color: var(--bad); color: #fff; }
+        .opt.is-wrong .otext { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 2px; }
+        .q .verdict { display: none; margin: 10px 0 0; font-size: .9rem; font-weight: 600; }
+        body.checked .q .verdict { display: block; }
+        .q.r-right .verdict { color: var(--ok); }
+        .q.r-wrong .verdict, .q.r-blank .verdict { color: var(--bad); }
+
+        /* Natija: test oxirida, o'qituvchining qizil ruchkasi */
+        .result { display: none; margin-top: 56px; padding-top: 28px; border-top: 3px solid var(--ink); scroll-margin-top: 20px; }
+        .result.show { display: block; }
+        .result h2 { margin: 0 0 22px; font-family: var(--display); font-size: 2rem; font-weight: 800; letter-spacing: -.02em; color: var(--ink); }
+        .result-main { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; }
+        .grade {
+            flex: none; width: 176px; height: 176px; display: grid; place-content: center; text-align: center;
+            border: 4px solid var(--bad); color: var(--bad);
+            border-radius: 54% 46% 52% 48% / 47% 55% 45% 53%;
+            transform: rotate(-5deg);
+            font-family: var(--display); font-weight: 800; line-height: 1;
+        }
+        .grade .big { font-size: 3.4rem; letter-spacing: -.03em; }
+        .grade .of { font-size: 1.15rem; font-weight: 650; margin-top: 4px; }
+        .result.show .grade { animation: stamp .35s cubic-bezier(.2, .9, .3, 1.2); }
+        @keyframes stamp { from { transform: rotate(-5deg) scale(1.5); opacity: 0; } to { transform: rotate(-5deg) scale(1); opacity: 1; } }
+        .stats { flex: 1; min-width: 240px; max-width: 420px; margin: 0; }
+        .stats div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--rule); }
+        .stats dt { color: var(--muted); }
+        .stats dd { margin: 0; font-family: var(--display); font-weight: 750; font-size: 1.25rem; }
+        .stats .good dd { color: var(--ok); }
+        .stats .bad dd { color: var(--bad); }
+        .breakdown { margin: 30px 0 0; max-width: 560px; width: 100%; border-collapse: collapse; }
+        .breakdown th, .breakdown td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); font-size: .95rem; }
+        .breakdown th { font-weight: 600; color: var(--muted); font-size: .85rem; }
+        .breakdown td:first-child { font-weight: 650; }
+        .result .btn { margin-top: 28px; }
+
+        /* Asl PDF sahifalari */
+        .pages { margin-top: 72px; }
+        .pages h2 { font-family: var(--display); font-weight: 750; font-size: 1.9rem; color: var(--ink); margin: 0 0 4px; }
+        .pages > p { margin: 0 0 18px; color: var(--muted); }
+        .page-shot { margin: 0 0 22px; padding: 12px; background: #fff; border: 1px solid var(--rule); box-shadow: 4px 4px 0 var(--grid); max-width: 720px; }
+        .page-shot figcaption { font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+        .foot { margin: 56px 0 0; color: var(--muted); font-size: .85rem; max-width: 60ch; }
+
+        /* Pastki panel */
+        .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--paper); border-top: 2px solid var(--ink); padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .dock-in { max-width: 940px; margin: 0 auto; padding: 12px 24px 12px var(--pad-left); display: flex; align-items: center; gap: 20px; }
+        .progress { flex: 1; min-width: 0; }
+        .progress .label { font-size: .9rem; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .progress .track { height: 6px; background: var(--grid); border-radius: 3px; overflow: hidden; }
+        .progress .fill { height: 100%; width: 0; background: var(--ink); transition: width .2s; }
+        .btn {
+            flex: none; font: inherit; font-weight: 700; font-size: 1rem; cursor: pointer;
+            padding: 12px 22px; border-radius: 8px; border: 2px solid var(--ink); background: var(--ink); color: #fff;
+        }
+        .btn:hover { background: #17309a; border-color: #17309a; }
+        .btn:focus-visible { outline: 3px solid #8aa0ff; outline-offset: 2px; }
+        .btn.ghost { background: var(--paper); color: var(--ink); }
+        .btn.ghost:hover { background: var(--ink-soft); }
+
+        /* Kattalashtirish oynasi */
+        #lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(12, 18, 40, .94); display: none; flex-direction: column; }
+        #lightbox.open { display: flex; }
+        #lightbox .lb-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; color: #e8ecfb; font-size: .9rem; }
+        #lightbox .lb-bar button { font: inherit; cursor: pointer; padding: 7px 14px; border-radius: 6px; border: 0; color: #fff; background: rgba(255,255,255,.14); }
+        #lightbox .lb-bar button.close { background: var(--bad); }
+        #lightbox .lb-body { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; padding: 0 12px 20px; }
+        #lightbox img { display: block; width: 100%; max-width: 1100px; height: auto; object-fit: contain; margin: 0 auto; background: #fff; }
+        #lightbox.zoomed img { max-width: none; width: 200%; }
+
+        @media (max-width: 680px) {
+            :root { --line-x: 16px; --pad-left: 30px; }
+            .sheet { padding: 32px 14px 16px var(--pad-left); }
+            .q { padding: 24px 0 26px; }
+            .q .num { position: static; width: auto; display: inline-block; margin-right: 8px; font-size: 1.2rem; }
+            .qtext { font-size: 1.02rem; }
+            .opts { grid-template-columns: 1fr; gap: 2px; }
+            .opt { padding: 10px 6px; }
+            .dock-in { padding: 10px 14px 10px var(--pad-left); gap: 12px; }
+            .progress .label { font-size: .82rem; }
+            .btn { padding: 11px 14px; font-size: .95rem; }
+            .result h2 { font-size: 1.7rem; }
+            .result-main { gap: 24px; }
+            .grade { width: 150px; height: 150px; }
+            .grade .big { font-size: 2.9rem; }
+            .stats { flex: 1 1 100%; min-width: 0; max-width: none; }
+            .result .btn { width: 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .result.show .grade { animation: none; }
+            .progress .fill { transition: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <header class="masthead">
+            <h1>Informatika olimpiadasi</h1>
+            <p class="lead">Maktabgacha va maktab ta'limi vazirligining tuman bosqichi topshiriqlari. Har bir savolda bitta to'g'ri javob bor.</p>
+            <dl class="facts">
+                <div><dt>Sinf</dt><dd>10-sinf</dd></div>
+                <div><dt>Sana</dt><dd>24.10.2024</dd></div>
+                <div><dt>Savollar</dt><dd>30 ta</dd></div>
+                <div><dt>Jami</dt><dd>50 ball</dd></div>
+            </dl>
+        </header>
+
+        <main id="quiz"></main>
+
+        <section class="result" id="result" aria-live="polite" tabindex="-1">
+            <h2>Test yakunlandi</h2>
+            <div class="result-main">
+                <div class="grade"><span class="big" id="grade-big">0</span><span class="of" id="grade-of">/ 50</span></div>
+                <dl class="stats">
+                    <div class="good"><dt>To'g'ri javoblar</dt><dd id="st-right">0</dd></div>
+                    <div class="bad"><dt>Noto'g'ri javoblar</dt><dd id="st-wrong">0</dd></div>
+                    <div><dt>Javob berilmagan</dt><dd id="st-blank">0</dd></div>
+                    <div><dt>To'plangan ball</dt><dd id="st-score">0</dd></div>
+                    <div><dt>Foiz</dt><dd id="st-percent">0%</dd></div>
+                </dl>
+            </div>
+            <table class="breakdown">
+                <thead><tr><th>Qism</th><th>To'g'ri</th><th>Ball</th></tr></thead>
+                <tbody id="breakdown-body"></tbody>
+            </table>
+            <button class="btn" id="restart-btn" type="button">Qaytadan boshlash</button>
+        </section>
+
+        <section class="pages">
+            <h2>Asl PDF sahifalari</h2>
+            <p>Savollarni asl varaqadagi ko'rinishida ham tekshirib olishingiz mumkin.</p>
+            <div id="pages-container"></div>
+        </section>
+
+        <p class="foot">Fan olimpiadalarini o'tkazish va iqtidorli o'quvchilarni saralash boshqarmasi</p>
+    </div>
+
+    <div class="dock">
+        <div class="dock-in">
+            <div class="progress">
+                <div class="label" id="progress-label">0 / 30 ta javob berildi</div>
+                <div class="track"><div class="fill" id="progress-fill"></div></div>
+            </div>
+            <button class="btn" id="action-btn" type="button">Tekshirish</button>
+        </div>
+    </div>
+
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Rasmni kattalashtirish">
+        <div class="lb-bar">
+            <span id="lb-title"></span>
+            <span>
+                <button id="lb-zoom" type="button">Kattalashtirish</button>
+                <button id="lb-close" class="close" type="button">Yopish</button>
+            </span>
+        </div>
+        <div class="lb-body"><img id="lb-img" alt=""></div>
+    </div>
+
+    <script>
+        const IMG_DIR = '/images/pdf-pages/';
+        const PAGES = [
+            { src: IMG_DIR + 'page-1.png', title: 'PDF 1-sahifa (1–15-savollar)' },
+            { src: IMG_DIR + 'page-2.png', title: 'PDF 2-sahifa (16–27-savollar)' },
+            { src: IMG_DIR + 'page-3.png', title: 'PDF 3-sahifa (28–30-savollar)' }
+        ];
+        const PARTS = {
+            1: { title: '1-qism', meta: 'Har bir savol 0,9 ball' },
+            2: { title: '2-qism', meta: 'Har bir savol 1,7 ball' },
+            3: { title: '3-qism', meta: 'Har bir savol 2,4 ball', note: "PDFda bu qismdagi javoblar qo'lda yoziladi. Saytda tanlash uchun variantlar qo'yilgan." }
+        };
+
+        const questions = [
+            { id: 1, part: 1, score: 0.9, question: "O'n ikkilik sanoq sistemasidagi 3A1 sonini yettilik sanoq sistemasiga o'tkazing.", options: ["1446", "1462", "1433", "1420"], answer: 3 },
+            { id: 2, part: 1, score: 0.9, question: "Rasmda ko'rsatilgan sxema qanday mantiqiy amalni ifodalaydi?",
+              figure: { src: IMG_DIR + 'q2-gate.png', alt: "2-savol: mantiqiy sxema (shlyuz belgisi)" }, page: 0,
+              options: ["nor", "or", "nand", "xor"], answer: 3 },
+            { id: 3, part: 1, score: 0.9, question: "Quyida keltirilgan qiymatlardan eng kattasini toping:", options: ["10 Gb", "1 GB", "1300 MB", "1048576 KB"], answer: 2 },
+            { id: 4, part: 1, score: 0.9, question: "Excel dasturida C3:J5 bloki nechta katakni o'z ichiga oladi?", options: ["24", "14", "16", "21"], answer: 0 },
+            { id: 5, part: 1, score: 0.9, question: "Quyidagi kod natijasini toping:<pre class='code'>print(3 * '7')</pre>", options: ["Error", "'777'", "21", "\"3333333\""], answer: 1 },
+            { id: 6, part: 1, score: 0.9, question: "GPS akronimi nimani anglatadi?", options: ["Geopositioning System", "Global Positioning Status", "Global Positioning System", "Geopositioning Status"], answer: 2 },
+            { id: 7, part: 1, score: 0.9, question: "Quyidagilardan qaysi biri pythonda matnli faylni to'g'ri usulda ochadi?", options: ['file.open("filename","r")', 'file.read("filename")', 'file = open_file("filename","r")', 'file = open("filename", "r")'], answer: 3 },
+            { id: 8, part: 1, score: 0.9, question: "Quyidagilardan qaysi biri python ma'lumot turlaridan emas?", options: ["int", "float", "chr", "str"], answer: 2 },
+            { id: 9, part: 1, score: 0.9, question: "Arifmetik va mantiqiy amallarni bajaruvchi, xotira qurilmasi bilan bog'lanuvchi, qurilmalar ishini boshqaruvchi qurilma qaysi biri?", options: ["Tezkor xotira", "Protsessor", "Tizimli plata", "Ta'minot bloki"], answer: 1 },
+            { id: 10, part: 1, score: 0.9, question: "Quyidagilardan qaysi biri smartfonlar uchun moslangan operatsion sistema?", options: ["MacOS", "CentOS", "Windows", "PalmOS"], answer: 3 },
+
+            { id: 11, part: 2, score: 1.7, question: "Quyidagi kod natijasini toping:<pre class='code'>x = 10\ndef foo():\n    global x\n    x = 20\nfoo()\nprint(x)</pre>", options: ["None", "10", "Error", "20"], answer: 3 },
+            { id: 12, part: 2, score: 1.7, question: "NTFS fayl tizimi qaysi operatsion sistemalarda ishlatiladi?", options: ["MacOS", "Windows", "Linux", "Android"], answer: 1 },
+            { id: 13, part: 2, score: 1.7, question: "ASCII jadvalidagi belgilaridan tashkil topgan matnli fayl 17 Kb hajmga ega. Bunda 75 bayt hajmdagi ma'lumot meta ma'lumotlar (faylga oid qo'shimcha ma'lumotlar) ekanligini bilgan holda matn nechta belgidan tashkil topganligini toping.", options: ["2101 ta belgi", "17333 ta belgi", "17408 ta belgi", "2176 ta belgi"], answer: 0 },
+            { id: 14, part: 2, score: 1.7, question: "=ЕСЛИ(ЕЧЁТН(12); \"juftmas\"; \"juft\") formula natijasini toping.<br>Inglizcha: IF(ISEVEN(12); \"juftmas\"; \"juft\")", options: ["juft", "formulada xatolik bor", "juftmas", "12"], answer: 2 },
+            { id: 15, part: 2, score: 1.7, question: "Quyidagi kod natijasini toping:<pre class='code'>print('abc' > 'bcd')</pre>", options: ["False", "True", "Error", "None"], answer: 0 },
+            { id: 16, part: 2, score: 1.7, question: "Rasmdagi sxemaga mos keluvchi mantiqiy ifodani toping:",
+              figure: { src: IMG_DIR + 'q16-circuit.png', alt: "16-savol: A, B, C, D kirishli mantiqiy sxema" }, page: 1,
+              options: ["¬(A ∨ B) ∨ (C ∧ D)", "¬(¬(A ∧ B) ∧ (C ∨ D))", "(A ∧ B) ∧ (C ∨ D)", "¬(¬(A ∨ B) ∨ (C ∧ D))"], answer: 1 },
+            { id: 17, part: 2, score: 1.7, question: "20<sub>3</sub> + 14<sub>x</sub> = 100<sub>10−x</sub> bo'lsa, x ni toping.", options: ["6", "7", "5", "3"], answer: 0 },
+            { id: 18, part: 2, score: 1.7, question: "Quyidagilardan qaysi biri pythondagi satrlar haqidagi to'g'ri mulohaza?", options: ["Satrlarni o'zgartirish mumkin", "Satrlarni qismlarga ajratish (slicing) mumkin emas", "Satrlarni o'zgartirib bo'lmaydi", "Satrlar obyekt, lekin ketma-ketlik emas"], answer: 2 },
+            { id: 19, part: 2, score: 1.7, question: "Excel dasturida D3 katakdagi =$F6*$C$1 formulaning F6 katakka nusxasini toping.", options: ["=$F6*$C$1", "=$H9*$E$4", "=$F9*$C$1", "=$H9*$C$1"], answer: 2 },
+            { id: 20, part: 2, score: 1.7, question: "Quyidagi kod parchasida print() funksiyasi necha marta chaqiriladi?<pre class='code'>for i in range(100):\n    for j in range(i):\n        print(i * j)</pre>", options: ["5050", "100", "10000", "4950"], answer: 3 },
+
+            { id: 21, part: 3, score: 2.4, question: "O'nlik sanoq sistemasidagi 18.5 sonini uchlik sanoq sistemasiga o'tkazing.", options: ["192.1", "202.12...", "101.1", "220.2"], answer: 1 },
+            { id: 22, part: 3, score: 2.4, question: "C ∨ A ∧ B mantiqiy ifodaning rostlik jadvalida nechta rost qiymati bor?", options: ["4", "8", "16", "2"], answer: 0 },
+            { id: 23, part: 3, score: 2.4, question: "Quyida keltirilgan jadval uchun yozilgan =КОРЕНЬ(ДЛСТР(ПОВТОР(\"ABC\"; СУММ(A1:B3))) + 1) formula natijasini toping.<br>Inglizcha: SQRT(LEN(REPT(\"ABC\"; SUM(A1:B3))) + 1)",
+              figure: { src: IMG_DIR + 'q23-table.png', alt: "23-savol: Excel jadvali (A1:B3)" }, page: 1,
+              options: ["7", "8", "9", "10"], answer: 1 },
+            { id: 24, part: 3, score: 2.4, question: "Quyidagi kod natijasini toping:<pre class='code'>def f(x):\n    if x <= 4: return x - 1\n    else: return g(x - 1) + f(x - 2)\n\ndef g(x):\n    if x <= 2: return 0\n    else: return f(x) - g(x-3)\n\nprint(f(7) + g(4))</pre>", options: ["12", "15", "18", "21"], answer: 0 },
+            { id: 25, part: 3, score: 2.4, question: "Quyidagi kod natijasini toping:<pre class='code'>print(range(5))</pre>", options: ["range(0, 5)", "[0, 1, 2, 3, 4]", "0, 1, 2, 3, 4", "Error"], answer: 0 },
+            { id: 26, part: 3, score: 2.4, question: "Quyidagi dasturga qanday minimal natural son kiritilganda, dastur natijasi 200 sonidan qat'iy katta bo'ladi?<pre class='code'>def popcount(x):\n    return bin(x).count('1')\n\ndef s(n):\n    ans = 0\n    for i in range(1 << n):\n        ans += popcount(i)\n    return ans\n\nprint(s(int(input())))</pre>", options: ["5", "6", "7", "8"], answer: 1 },
+            { id: 27, part: 3, score: 2.4, question: "Quyidagi kod natijasini toping:<pre class='code'>print(bool([]))</pre>", options: ["True", "False", "None", "Error"], answer: 1 },
+            { id: 28, part: 3, score: 2.4, question: "1920x1080 o'lchamidagi rasmning o'lchami 3037,5 KB bo'lsa, rasmning har bir pikseli necha xil rangda bo'lishi mumkin?", options: ["256", "65536", "16777216 (16,7 mln)", "512"], answer: 0 },
+            { id: 29, part: 3, score: 2.4, question: "Ikkilik sanoq sistemasidagi 10110,110110110110… (davrda 110) sonini yettilik sanoq sistemasida ifodalang.", options: ["26.54...", "32.41...", "22.52...", "14.32..."], answer: 2 },
+            { id: 30, part: 3, score: 2.4, question: "Excel kitobidagi =ИСКЛИЛИ(ИСТИНА; ИЛИ(0&lt;ЗНАК(-32); НЕ(ЛОЖЬ))) formula natijasini toping.<br>Inglizcha: XOR(TRUE; OR(0&lt;SIGN(-32); NOT(FALSE)))", options: ["TRUE (Rost)", "FALSE (Yolg'on)", "ERROR", "0"], answer: 1 }
+        ];
+
+        const LETTERS = ['A', 'B', 'C', 'D'];
+        const TOTAL = questions.length;
+        const MAX_SCORE = questions.reduce((s, q) => s + q.score, 0);
+        const fmt = n => (Math.round(n * 10) / 10).toFixed(1).replace('.', ',').replace(/,0$/, '');
+
+        /* ---------- Rasm komponenti ---------- */
+        function imgTag(src, alt, lazy = false) {
+            return `<img class="pdf-img" src="${src}" alt="${alt}" ${lazy ? 'loading="lazy"' : ''}
+                data-src="${src}" data-title="${alt}"
+                onerror="imgFailed(this)"
+                onclick="openLightbox(this.dataset.src, this.dataset.title)">`;
+        }
+        function imgFailed(el) {
+            console.error('[RASM XATOSI] Yuklanmadi:', el.dataset.src);
+            const box = document.createElement('div');
+            box.className = 'img-error';
+            box.textContent = 'Rasm yuklanmadi: ' + el.dataset.src;
+            el.replaceWith(box);
+        }
+
+        /* ---------- Kattalashtirish oynasi ---------- */
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lb-img');
+        function openLightbox(src, title) {
+            lbImg.src = src; lbImg.alt = title;
+            document.getElementById('lb-title').textContent = title;
+            lb.classList.remove('zoomed');
+            lb.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+        document.getElementById('lb-close').addEventListener('click', closeLightbox);
+        document.getElementById('lb-zoom').addEventListener('click', () => lb.classList.toggle('zoomed'));
+        lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lb-body')) closeLightbox(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        /* ---------- Chizish ---------- */
+        function renderQuiz() {
+            let html = '';
+            let currentPart = 0;
+            questions.forEach(q => {
+                if (q.part !== currentPart) {
+                    if (currentPart) html += '</section>';
+                    currentPart = q.part;
+                    const p = PARTS[q.part];
+                    html += `<section class="part"><h2>${p.title}</h2><p class="part-meta">${p.meta}</p>${p.note ? `<p class="part-note">${p.note}</p>` : ''}`;
+                }
+                html += `<article class="q" id="question-${q.id}">
+                    <h3 class="qtext"><span class="num">${q.id}</span>${q.question}</h3>`;
+
+                if (q.figure) {
+                    const pg = PAGES[q.page];
+                    html += `<div class="fig" data-figure="q${q.id}">
+                        <div class="fig-frame">${imgTag(q.figure.src, q.figure.alt)}</div>
+                        <p class="hint">Rasmni bossangiz, kattalashadi.</p>
+                        <details><summary>Asl PDF sahifasini ko'rish</summary>${imgTag(pg.src, pg.title, true)}</details>
+                    </div>`;
+                }
+
+                html += `<div class="opts" role="radiogroup" aria-label="${q.id}-savol variantlari">`;
+                q.options.forEach((opt, i) => {
+                    html += `<label class="opt"><input type="radio" name="q-${q.id}" value="${i}"><span class="letter">${LETTERS[i]}</span><span class="otext">${opt}</span></label>`;
+                });
+                html += `</div><p class="verdict"></p></article>`;
+            });
+            html += '</section>';
+            document.getElementById('quiz').innerHTML = html;
+
+            document.getElementById('pages-container').innerHTML = PAGES.map(p => `
+                <figure class="page-shot">
+                    <figcaption>${p.title}</figcaption>
+                    ${imgTag(p.src, p.title, true)}
+                </figure>`).join('');
+        }
+
+        /* ---------- Jarayon ---------- */
+        const label = document.getElementById('progress-label');
+        const fill = document.getElementById('progress-fill');
+        const actionBtn = document.getElementById('action-btn');
+        let checked = false;
+
+        let summary = null;   // oxirgi natija
+
+        function updateProgress() {
+            const answered = questions.filter(q => document.querySelector(`input[name="q-${q.id}"]:checked`)).length;
+            if (checked && summary) {
+                label.textContent = `${summary.right} ta to'g'ri · ${fmt(summary.total)} / ${fmt(MAX_SCORE)} ball`;
+                fill.style.width = (summary.total / MAX_SCORE * 100) + '%';
+            } else {
+                label.textContent = `${answered} / ${TOTAL} ta javob berildi`;
+                fill.style.width = (answered / TOTAL * 100) + '%';
+            }
+            return answered;
+        }
+        document.getElementById('quiz').addEventListener('change', () => { if (!checked) updateProgress(); });
+
+        function submitQuiz() {
+            const unanswered = TOTAL - updateProgress();
+            if (unanswered > 0 && !confirm(`${unanswered} ta savolga javob berilmagan. Baribir tekshiraymi?`)) return;
+
+            let total = 0, right = 0, blank = 0;
+            const byPart = { 1: { right: 0, score: 0, n: 0, max: 0 }, 2: { right: 0, score: 0, n: 0, max: 0 }, 3: { right: 0, score: 0, n: 0, max: 0 } };
+            questions.forEach(q => {
+                const card = document.getElementById(`question-${q.id}`);
+                const sel = document.querySelector(`input[name="q-${q.id}"]:checked`);
+                const verdict = card.querySelector('.verdict');
+                const bp = byPart[q.part];
+                bp.n++; bp.max += q.score;
+                card.classList.remove('r-right', 'r-wrong', 'r-blank');
+                card.querySelectorAll('input').forEach(i => i.disabled = true);
+                const opts = card.querySelectorAll('.opt');
+                opts[q.answer].classList.add('is-correct');
+                if (!sel) {
+                    blank++; card.classList.add('r-blank');
+                    verdict.textContent = `Javob berilmadi. To'g'ri javob: ${LETTERS[q.answer]}`;
+                } else if (parseInt(sel.value) === q.answer) {
+                    total += q.score; right++; bp.right++; bp.score += q.score; card.classList.add('r-right');
+                    verdict.textContent = `To'g'ri, +${fmt(q.score)} ball`;
+                } else {
+                    card.classList.add('r-wrong');
+                    opts[parseInt(sel.value)].classList.add('is-wrong');
+                    verdict.textContent = `Noto'g'ri. To'g'ri javob: ${LETTERS[q.answer]}`;
+                }
+            });
+            const wrong = TOTAL - right - blank;
+            summary = { total, right, wrong, blank };
+            checked = true;
+            document.body.classList.add('checked');
+
+            document.getElementById('grade-big').textContent = fmt(total);
+            document.getElementById('grade-of').textContent = `/ ${fmt(MAX_SCORE)}`;
+            document.getElementById('st-right').textContent = `${right} ta`;
+            document.getElementById('st-wrong').textContent = `${wrong} ta`;
+            document.getElementById('st-blank').textContent = `${blank} ta`;
+            document.getElementById('st-score').textContent = `${fmt(total)} / ${fmt(MAX_SCORE)}`;
+            document.getElementById('st-percent').textContent = `${Math.round(total / MAX_SCORE * 100)}%`;
+            document.getElementById('breakdown-body').innerHTML = Object.keys(byPart).map(k => {
+                const b = byPart[k];
+                return `<tr><td>${PARTS[k].title}</td><td>${b.right} / ${b.n}</td><td>${fmt(b.score)} / ${fmt(b.max)}</td></tr>`;
+            }).join('');
+
+            document.getElementById('result').classList.add('show');
+            actionBtn.textContent = 'Natijaga o\'tish';
+            actionBtn.classList.add('ghost');
+            updateProgress();
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            document.getElementById('result').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        }
+
+        function resetQuiz() {
+            document.querySelectorAll('#quiz input').forEach(i => { i.checked = false; i.disabled = false; });
+            document.querySelectorAll('.opt').forEach(o => o.classList.remove('is-correct', 'is-wrong'));
+            document.querySelectorAll('.q').forEach(q => q.classList.remove('r-right', 'r-wrong', 'r-blank'));
+            document.body.classList.remove('checked');
+            document.getElementById('result').classList.remove('show');
+            actionBtn.textContent = 'Tekshirish';
+            actionBtn.classList.remove('ghost');
+            checked = false; summary = null;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        actionBtn.addEventListener('click', () => {
+            if (!checked) submitQuiz();
+            else document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        document.getElementById('restart-btn').addEventListener('click', resetQuiz);
+
+        renderQuiz();
+        updateProgress();
+    </script>
+</body>
+</html>
